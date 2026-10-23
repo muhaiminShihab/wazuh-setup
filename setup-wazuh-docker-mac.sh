@@ -209,7 +209,8 @@ pick_dashboard_port() {
 fresh_setup() {
   say "Setting up Wazuh $WAZUH_VERSION in $INSTALL_DIR"
   [[ -e "$INSTALL_DIR" ]] && die "$INSTALL_DIR already exists but wasn't set up by this script.
-  Move or rename it, or choose another folder: WAZUH_DIR=~/some-folder bash $0"
+  Move or rename it, or set WAZUH_DIR to another folder before running the script, e.g.
+    export WAZUH_DIR=~/wazuh-docker-2"
   local vols
   vols="$(docker volume ls -q)"
   if grep -qx 'single-node_wazuh-indexer-data' <<<"$vols"; then
@@ -392,6 +393,8 @@ main() {
   summary
 }
 
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+# Runs main when executed (from a file, `bash -c "$(curl …)"`, or `curl … | bash`),
+# not when sourced by tests.
+if [[ "${BASH_SOURCE[0]:-$0}" == "$0" ]]; then
   main "$@"
 fi
